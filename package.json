@@ -1,0 +1,11 @@
+{
+  "name": "webdriver-a11y-audit",
+  "version": "1.0.0",
+  "description": "Accessibility checker",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "Robert Kievits <R.Kievits@rn.rabobank.nl>",
+  "license": "ISC"
+}
