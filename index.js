@@ -1,5 +1,6 @@
 var fs = require('fs'),
-	path = require('path');
+	path = require('path'),
+	mkdirp = require('mkdirp');
 
 function A11yAudit(options, driver) {
 	this.options = options;
@@ -40,18 +41,17 @@ A11yAudit.prototype.audit = function(driver) {
 
 
 A11yAudit.prototype.output = function(data) {
-	var resultFolder = path.join(process.cwd(), this.options.resultPath);
-
-	//fs.mkdir(path[, mode], callback)
-	console.log(fs.exists(resultFolder));
-	// var failed = data.filter(function(result) {
-	// 	return result.result.toLowerCase() === 'fail';
-	// }).map(function(result) { return obj.id; });
-	// console.log(JSON.result(failed));
-	fs.writeFile(path.join(resultFolder, 'audit.json'), data, (err) => {
-	  if (err) throw err;
-	  console.log('It\'s saved!');
+	mkdirp(this.options.resultPath, (err) => {
+	    if (err) console.error(err);
+	    else {
+	    	const resultFolder = path.join(process.cwd(), this.options.resultPath);
+	    	fs.writeFile(path.join(resultFolder, 'audit.json'), data, (err) => {
+			  if (err) throw err;
+			  console.log('It\'s saved!');
+			});
+	    }
 	});
+	
 }
 
 module.exports = A11yAudit;
