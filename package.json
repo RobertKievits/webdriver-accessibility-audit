@@ -9,6 +9,7 @@
   "author": "Robert Kievits <robert.kievits@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "jsonfile": "2.2.3",
     "mkdirp": "^0.5.1"
   }
 }
