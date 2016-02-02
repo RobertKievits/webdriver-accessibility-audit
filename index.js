@@ -3,49 +3,29 @@
 const fs = require('fs');
 const path = require('path');
 const mkdirp = require('mkdirp');
-const jsonfile = require('jsonfile');
+const output = require('./src/output');
 
-let resultFolder;
+/**
+ * Constructor for chainable WebDriver API
+ * @param {WebDriver} driver WebDriver instance to analyze
+ */
+function A11yAudit(driver, options) {
+	if (!(this instanceof A11yAudit)) {
+    	return new A11yAudit(driver, options);
+  	}
 
-function A11yAudit(options, driver) {
-	this.options = options;
 	this._driver = driver;
+  	this._options = options;
+
+  	this.createResultFolder(options.resultPath);
 }
 
-A11yAudit.prototype.browserCheck = function() {
-	return this._driver.getCapabilities()
-		.then(function(data) {
-			return data.caps_.browserName === 'chrome'
-		});
-}
 
-A11yAudit.prototype.init = function() {
-	this._flow = this._driver.controlFlow();
-
-	return this.browserCheck()
-		.then((isChrome) => {
-			if (isChrome) {
-				let axs = fs.readFileSync(path.join(__dirname, 'lib/axs_testing.js'), 'utf-8');
-				resultFolder = path.join(process.cwd(), this.options.resultPath);
-				this.createFolder(resultFolder);
-				return this._driver.executeScript(axs);
-			}
-		});
-}
-
-A11yAudit.prototype.audit = function(testName) {
-	return this.browserCheck()
-		.then((isChrome) => {
-			if (isChrome) {
-				this._driver.executeScript('return axs.Audit.run()')
-					.then((data) => {
-						this.output(data, testName);
-					});
-			}
-		});
-}
-
-A11yAudit.prototype.createFolder = function(folder) {
+/**
+ * Creates folder where results will be placed
+ * @param  {Function} callback Function
+ */
+A11yAudit.prototype.createResultFolder = function(folder) {
 	fs.stat(folder, (err, stats) => {
 		if (err && err.code === 'ENOENT') {
 			mkdirp(folder, (err) => {
@@ -55,66 +35,41 @@ A11yAudit.prototype.createFolder = function(folder) {
 	});
 }
 
-A11yAudit.prototype.resolveElements = function(tests) {
-	var promises = tests.map((test, i) => {
-		return this.getElements(test.elements)
-			.then((elements) => {
-				test.elements = elements;
-				return test;
-			});
-	});
 
-	return Promise.all(promises)
-}
-
-A11yAudit.prototype.formatJson = function(tests, testName) {
-	let resultObj = {};
-	resultObj[testName] = {};
-	let testObj = resultObj[testName];
+/**
+ * Runs accessibility audit
+ * @param {String} String pass name of test to output  
+ */
+A11yAudit.prototype.audit = function(testName) {
+	var flow = this._driver.controlFlow();
+	var axs = fs.readFileSync(path.join(__dirname, 'libs/axs_testing.js'), 'utf-8');
+	var script = '(function () {' +
+		'if (typeof axs === "object" && axs.version) { return; }' +
+		'var s = document.createElement("script");' +
+		's.innerHTML = ' + JSON.stringify(axs) + ';' +
+		'document.body.appendChild(s);' +
+		'}());';
 	
-	tests.forEach((test) => {
-		let result = test.result.toLowerCase();
-		let severity = test.rule.severity.toLowerCase();
-		if (!testObj[result]) {
-			testObj[result] = {};
-		}
-		if (!testObj[result][severity]) {
-			testObj[result][severity] = [];
-		}
-
-		testObj[result][severity].push(test);
-	});
-
-	return resultObj;
-}
-
-A11yAudit.prototype.output = function(tests, testName) {
-	this.resolveElements(tests)
-		.then((data) => {
-			return this.formatJson(data, testName);
-		})
-		.then((data) => {
-			jsonfile.writeFile(path.join(resultFolder, testName + '.json'), data, {spaces: 4}, function(err) {
-				if (err) throw err;
+	
+	function analyze() {
+		return this._driver.getCapabilities()
+			.then((data) => {
+				if (data.caps_.browserName === 'chrome') {
+					return this._driver
+						.executeScript(script)
+						.then(() => {
+							return this._driver.executeScript('return axs.Audit.run()')
+						})
+						.then((tests) => {
+							output(tests, testName, this._options.resultPath);
+						});
+				}
 			});
-		})
-		.catch((e) => {
-			console.log(e);
-		});
-}
-
-A11yAudit.prototype.getElements = (elements) => {
-	if (!elements || !elements.length > 0) {
-		return new Promise((resolve, reject) => {
-			resolve([]);
-		});
 	}
+	
 
-	var els = elements.map((element) => {
-		return element.getAttribute('class')
-	});
-
-	return Promise.all(els);
+	return flow.execute(analyze.bind(this));
 }
+
 
 module.exports = A11yAudit;
