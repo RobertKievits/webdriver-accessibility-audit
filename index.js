@@ -11,13 +11,15 @@ const output = require('./src/output');
  */
 function A11yAudit(driver, options) {
 	if (!(this instanceof A11yAudit)) {
-    	return new A11yAudit(driver, options);
-  	}
+		return new A11yAudit(driver, options);
+	}
 
 	this._driver = driver;
-  	this._options = options;
+	this._options = options;
 
-  	this.createResultFolder(options.resultPath);
+	options.resultPath = options.resultPath || '';
+	this.createResultFolder(options.resultPath);
+	this.createConfig(options);
 }
 
 
@@ -33,6 +35,17 @@ A11yAudit.prototype.createResultFolder = function(folder) {
 			});
 		}
 	});
+}
+
+
+/**
+ * Creates config for axs run
+ * @param  {Function} callback Function
+ */
+A11yAudit.prototype.createConfig = function(options) {
+	this._config = {
+		auditRulesToIgnore : options.auditRulesToIgnore
+	};
 }
 
 
@@ -58,7 +71,7 @@ A11yAudit.prototype.audit = function(testName) {
 					return this._driver
 						.executeScript(script)
 						.then(() => {
-							return this._driver.executeScript('return axs.Audit.run()')
+							return this._driver.executeScript(`return axs.Audit.run(new axs.AuditConfiguration(${JSON.stringify(this._config)}))`)
 						})
 						.then((tests) => {
 							output(tests, testName, this._options.resultPath);

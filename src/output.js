@@ -5,7 +5,7 @@ const path = require('path');
 const jsonfile = require('jsonfile');
 
 
-function Output (tests, testName, folder) {
+function Output(tests, testName, folder) {
 	if (!(this instanceof Output)) {
     	return new Output(tests, testName, folder);
 	}
