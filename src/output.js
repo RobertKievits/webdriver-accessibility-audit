@@ -66,7 +66,7 @@ Output.prototype.resolveElements = function(tests) {
 				test.elements = elements;
 				return test;
 			});
-	}));
+	}.bind(this)));
 }
 
 module.exports = Output;
