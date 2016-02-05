@@ -1,9 +1,9 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const mkdirp = require('mkdirp');
-const output = require('./src/output');
+var fs = require('fs');
+var path = require('path');
+var mkdirp = require('mkdirp');
+var output = require('./src/output');
 
 /**
  * Constructor for chainable WebDriver API
@@ -28,13 +28,13 @@ function A11yAudit(driver, options) {
  * @param  {Function} callback Function
  */
 A11yAudit.prototype.createResultFolder = function(folder) {
-	fs.stat(folder, (err, stats) => {
+	fs.stat(folder, function (err, stats) {
 		if (err && err.code === 'ENOENT') {
-			mkdirp(folder, (err) => {
+			mkdirp(folder, function (err) {
 				if (err) console.error(err);
 			});
 		}
-	});
+	}.bind(this));
 }
 
 
@@ -66,18 +66,18 @@ A11yAudit.prototype.audit = function(testName) {
 	
 	function analyze() {
 		return this._driver.getCapabilities()
-			.then((data) => {
+			.then(function (data) {
 				if (data.caps_.browserName === 'chrome') {
 					return this._driver
 						.executeScript(script)
-						.then(() => {
+						.then(function () {
 							return this._driver.executeScript(`return axs.Audit.run(new axs.AuditConfiguration(${JSON.stringify(this._config)}))`)
-						})
-						.then((tests) => {
+						}.bind(this))
+						.then(function (tests) {
 							output(tests, testName, this._options.resultPath);
-						});
+						}.bind(this));
 				}
-			});
+			}.bind(this));
 	}
 	
 

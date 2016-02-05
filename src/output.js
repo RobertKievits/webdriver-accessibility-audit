@@ -1,8 +1,8 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const jsonfile = require('jsonfile');
+var fs = require('fs');
+var path = require('path');
+var jsonfile = require('jsonfile');
 
 
 function Output(tests, testName, folder) {
@@ -13,17 +13,17 @@ function Output(tests, testName, folder) {
 	this._folder = folder;
 
 	this.resolveElements(tests)
-		.then((data) => {
+		.then(function (data) {
 			return this.formatJson(data, testName);
-		})
-		.then((data) => {
+		}.bind(this))
+		.then(function (data) {
 			jsonfile.writeFile(path.join(this._folder, testName + '.json'), data, {spaces: 4}, function(err) {
 				if (err) throw err;
 			});
-		})
-		.catch((e) => {
+		}.bind(this))
+		.catch(function (e) {
 			console.log(e);
-		});
+		}.bind(this));
 }
 
 Output.prototype.formatJson = function(tests, testName) {
@@ -31,7 +31,7 @@ Output.prototype.formatJson = function(tests, testName) {
 	resultObj[testName] = {};
 	let testObj = resultObj[testName];
 	
-	tests.forEach((test) => {
+	tests.forEach(function (test) {
 		let result = test.result.toLowerCase();
 		let severity = test.rule.severity.toLowerCase();
 		if (!testObj[result]) {
@@ -47,22 +47,22 @@ Output.prototype.formatJson = function(tests, testName) {
 	return resultObj;
 }
 
-Output.prototype.getElements = (elements) => {
+Output.prototype.getElements = function (elements) {
 	if (!elements || !elements.length > 0) {
-		return new Promise((resolve, reject) => {
+		return new Promise(function (resolve, reject) {
 			resolve([]);
 		});
 	}
 
-	return Promise.all(elements.map((element) => {
+	return Promise.all(elements.map(function (element) {
 		return element.getAttribute('class')
 	}));
 }
 
 Output.prototype.resolveElements = function(tests) {
-	return Promise.all(tests.map((test, i) => {
+	return Promise.all(tests.map(function (test, i) {
 		return this.getElements(test.elements)
-			.then((elements) => {
+			.then(function (elements) {
 				test.elements = elements;
 				return test;
 			});
