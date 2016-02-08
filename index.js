@@ -71,7 +71,7 @@ A11yAudit.prototype.audit = function(testName) {
 					return this._driver
 						.executeScript(script)
 						.then(function () {
-							return this._driver.executeScript(`return axs.Audit.run(new axs.AuditConfiguration(${JSON.stringify(this._config)}))`)
+							return this._driver.executeScript('return axs.Audit.run(new axs.AuditConfiguration(' + JSON.stringify(this._config) + '))')
 						}.bind(this))
 						.then(function (tests) {
 							output(tests, testName, this._options.resultPath);
