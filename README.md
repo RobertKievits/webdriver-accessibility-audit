@@ -7,7 +7,8 @@ $ npm install webdriver-accessiblity-audit --save-dev
 ```
  
 ### Writing tests
-In your protractor test you can include an auti as following:
+In your protractor test you can include an audit as following:
+
 ```
 var options = {
     resultPath: 'test/accessibility/audits',
@@ -23,13 +24,13 @@ describe('protractor test', function() {
 		accessiblity.audit('nameOfAudit');
 		....
 	});
-	
+
 	...
 })
 ```
 
 ### Possible rules
-* [ariaOnReservedElement]()
+* ariaOnReservedElement
 * [ariaOwnsDescendant](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_aria_08)
 * [ariaRoleNotScoped](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_aria_09)
 * [audioWithoutControls](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_audio_01)
@@ -45,16 +46,16 @@ describe('protractor test', function() {
 * [linkWithUnclearPurpose](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_text_04)
 * [lowContrastElements](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#color)
 * [mainRoleOnInappropriateElement](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_aria_05)
-* [multipleAriaOwners]()
-* [multipleLabelableElementsPerLabel]()
+* multipleAriaOwners
+* multipleLabelableElementsPerLabel
 * [nonExistentAriaRelatedElement](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_aria_02)
 * [pageWithoutTitle](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_title_01)
-* [requiredAriaAttributeMissing]()
-* [requiredOwnedAriaRoleMissing]()
-* [roleTooltipRequiresDescribedby]()
+* requiredAriaAttributeMissing
+* requiredOwnedAriaRoleMissing
+* roleTooltipRequiresDescribedby
 * [tabIndexGreaterThanZero](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_focus_03)
 * [tableHasAppropriateHeaders](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_table_01)
-* [uncontrolledTabpanel]()
+* uncontrolledTabpanel
 * [unfocusableElementsWithOnClick](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_focus_02)
 * [unsupportedAriaAttribute](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_aria_10)
 * [videoWithoutCaptions](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_video_01)
