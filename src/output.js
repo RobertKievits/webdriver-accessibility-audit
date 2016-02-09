@@ -27,13 +27,13 @@ function Output(tests, testName, folder) {
 }
 
 Output.prototype.formatJson = function(tests, testName) {
-	let resultObj = {};
+	var resultObj = {};
 	resultObj[testName] = {};
-	let testObj = resultObj[testName];
+	var testObj = resultObj[testName];
 	
 	tests.forEach(function (test) {
-		let result = test.result.toLowerCase();
-		let severity = test.rule.severity.toLowerCase();
+		var result = test.result.toLowerCase();
+		var severity = test.rule.severity.toLowerCase();
 		if (!testObj[result]) {
 			testObj[result] = {};
 		}
